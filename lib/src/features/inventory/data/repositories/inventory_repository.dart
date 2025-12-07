@@ -26,4 +26,21 @@ class InventoryRepository {
       throw Exception('Failed to get box: $e');
     }
   }
+
+  /// Fetches all boxes belonging to a specific user.
+  Future<List<BoxModel>> getUserBoxes(String userId) async {
+    try {
+      final snapshot = await _firestore
+          .collection('boxes')
+          .where('ownerId', isEqualTo: userId)
+          .orderBy('createdAt', descending: true)
+          .get();
+
+      return snapshot.docs
+          .map((doc) => BoxModel.fromMap(doc.data()))
+          .toList();
+    } catch (e) {
+      throw Exception('Failed to fetch user boxes: $e');
+    }
+  }
 }
